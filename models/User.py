@@ -4,7 +4,7 @@ import uuid
 
 
 class User(sql_alchemy_db.Model):
-    user_id = sql_alchemy_db.Column(sql_alchemy_db.String(36), primary_key=True, default=str(uuid.uuid4()))
+    user_id = sql_alchemy_db.Column(sql_alchemy_db.String(50), unique=True, primary_key=True, default=str(uuid.uuid4()))
     first_name = sql_alchemy_db.Column(sql_alchemy_db.String(50), nullable=False)
     last_name = sql_alchemy_db.Column(sql_alchemy_db.String(50), nullable=False)
     email = sql_alchemy_db.Column(sql_alchemy_db.String(255), unique=True, nullable=False)
