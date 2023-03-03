@@ -2,6 +2,7 @@ version: "3"
 
 services:
   db:
+    container_name: mysql_server
     image: mysql
     restart: always
     environment:
@@ -12,3 +13,13 @@ services:
       - "3306:3306"
     volumes:
       - ./data:/var/lib/mysql
+
+# the image below is working, but I cannot make it "talk" with the db on the other image
+#  web:
+#    build: .
+#    depends_on:
+#      - db
+#    ports:
+#      - "5000:5000"
+#    env_file:
+#      - .env

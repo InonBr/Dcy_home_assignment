@@ -3,7 +3,6 @@ from routes.users import users_bp
 from db.connect_db import host, db_user, db_name, password
 from db.database import sql_alchemy_db
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 from models import *
 
 app = Flask(__name__)
