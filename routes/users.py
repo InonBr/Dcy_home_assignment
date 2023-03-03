@@ -1,20 +1,15 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, request
 from validators import SignupValidator
+from utils import validate_request_body
 
 users_bp = Blueprint('api', __name__, url_prefix='/api')
 
 
 @users_bp.route('/signup', methods=["POST"])
-def index():
-    body = SignupValidator()
+@validate_request_body(SignupValidator)
+def signup():
+    body = request.json
 
-    if not body.validate():
-        print(dict(body.errors))
-        return jsonify({"errors": dict(body.errors)}), 400
-
-    # first_name = form.first_name.data
-    # last_name = form.last_name.data
-    # email = form.email.data
-    # password = form.password.data
+    print(body)
 
     return 'Hello, World!'
