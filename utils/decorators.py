@@ -31,9 +31,6 @@ def auth_required(f):
         try:
             if token_test is not None:
                 current_user = jwt.decode(token_test, token, algorithms=["HS256"])
-
-                print(current_user)
-
                 request.current_user = current_user
             else:
                 return jsonify({'msg': 'Token was not provided!'}), 403

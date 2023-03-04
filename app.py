@@ -1,6 +1,6 @@
 from flask import Flask
 from routes.users import users_bp
-from routes.posts import posts_bp
+from routes.blogs import blogs_bp
 from db.new_mysql_session import mysql_connection_string
 from db.database import sql_alchemy_db
 from flask_migrate import Migrate
@@ -16,7 +16,7 @@ sql_alchemy_db.init_app(app)
 migrate = Migrate(app, sql_alchemy_db)
 
 app.register_blueprint(users_bp)
-app.register_blueprint(posts_bp)
+app.register_blueprint(blogs_bp)
 
 
 if __name__ == "__main__":
