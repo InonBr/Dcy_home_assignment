@@ -10,7 +10,7 @@ load_dotenv()
 
 token = os.getenv("TOKEN")
 
-users_bp = Blueprint('api', __name__, url_prefix='/api')
+users_bp = Blueprint('users_api', __name__, url_prefix='/api')
 
 
 @users_bp.route('/signup', methods=["POST"])

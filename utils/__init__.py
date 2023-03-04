@@ -1,1 +1,1 @@
-from .decorators import validate_request_body
+from .decorators import validate_request_body, auth_required
