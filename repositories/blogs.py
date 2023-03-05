@@ -42,6 +42,11 @@ def get_all_blogs():
     ]
 
 
+def update_current_blog(blog, new_blog_text, session):
+    blog.blog_content = new_blog_text
+    session.commit()
+
+
 def delete_current_blog(blog, session):
     session.delete(blog)
     session.commit()

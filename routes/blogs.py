@@ -1,9 +1,9 @@
 from flask import Blueprint, request, abort
-from validators import NewBlogValidator, BlogIdParamsValidators
+from validators import BlogTextValidator, BlogIdParamsValidators
 from utils import validate_request_body, auth_required, validate_request_params
 from db.new_mysql_session import session
 from repositories import get_user_by_email, create_new_blog, get_all_blogs, get_blog_by_id_and_user_id, \
-    delete_current_blog
+    delete_current_blog, update_current_blog, get_likes_based_on_blog_id
 
 blogs_bp = Blueprint('blogs_api', __name__, url_prefix='/api')
 
@@ -33,7 +33,7 @@ def get_blogs():
 
 
 @blogs_bp.route('/new_blog', methods=["POST"])
-@validate_request_body(NewBlogValidator)
+@validate_request_body(BlogTextValidator)
 @auth_required
 def new_post():
     try:
@@ -66,12 +66,51 @@ def new_post():
         session.close()
 
 
+@blogs_bp.route('/update/<string:blog_id>', methods=["PATCH"])
+@validate_request_params(BlogIdParamsValidators)
+@validate_request_body(BlogTextValidator)
+@auth_required
+def update_blog(blog_id):
+    try:
+        current_user = request.current_user
+        blog_text = request.json["blog_text"]
+
+        user_data = get_user_by_email(current_user["email"], session)
+
+        if not user_data:
+            return "user not found", 404
+
+        blog_to_update = get_blog_by_id_and_user_id(blog_id, current_user["user_id"], session)
+
+        if not user_data:
+            return "blog not found", 404
+
+        update_current_blog(blog_to_update, blog_text, session)
+
+        blog_dic = {
+            "blog_id": blog_to_update.blog_id,
+            "blog_owner_id": blog_to_update.blog_owner_id,
+            "blog_content": blog_text,
+            "timestamp": blog_to_update.timestamp,
+            "likes": get_likes_based_on_blog_id(blog_id)
+        }
+
+        return {"updated_blog": blog_dic}, 200
+    except Exception as e:
+        session.rollback()
+
+        print(str(e))
+
+        return abort(500, 'Internal server error')
+    finally:
+        session.close()
+
+
 @blogs_bp.route('/delete/<string:blog_id>', methods=["DELETE"])
 @validate_request_params(BlogIdParamsValidators)
 @auth_required
 def delete_blog(blog_id):
     try:
-        print(blog_id)
         current_user = request.current_user
 
         user_data = get_user_by_email(current_user["email"], session)
