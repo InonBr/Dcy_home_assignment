@@ -10,6 +10,7 @@ db_user = os.getenv("DB_USER")
 password = os.getenv("PASSWORD")
 db_name = os.getenv("DATABASE")
 
+# mysql_connection_string = f"mysql+pymysql://{db_user}:{password}@{host}/{db_name}"
 mysql_connection_string = f"mysql+pymysql://{db_user}:{password}@{host}/{db_name}"
 
 engine = create_engine(mysql_connection_string)

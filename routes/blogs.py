@@ -2,6 +2,7 @@ from flask import Blueprint, request, abort
 from validators import NewBlogValidator
 from utils import validate_request_body, auth_required
 from db.new_mysql_session import session
+from repositories import get_user_by_email, create_new_blog
 
 blogs_bp = Blueprint('blogs_api', __name__, url_prefix='/api')
 
@@ -11,19 +12,31 @@ blogs_bp = Blueprint('blogs_api', __name__, url_prefix='/api')
 @auth_required
 def new_post():
     try:
-        return "blog"
-        # jwt_token = create_new_user(request.json, token, session)
-        #
-        # session.close()
-        #
-        # return {"user": jwt_token, "msg": "new user created successfully!"}, 201
+        current_user = request.current_user
+        blog_text = request.json["blog_text"]
+
+        user_data = get_user_by_email(current_user["email"], session)
+
+        if not user_data:
+            return "user not found", 404
+
+        new_blog_data = create_new_blog(blog_text, current_user, session)
+
+        blog_dic = {
+            "blog_id": new_blog_data.blog_id,
+            "blog_owner_id": new_blog_data.blog_owner_id,
+            "blog_content": new_blog_data.blog_content,
+            "timestamp": new_blog_data.timestamp,
+            "likes": []
+        }
+
+        session.close()
+
+        return {"new_blog": blog_dic}, 201
     except Exception as e:
         session.rollback()
         session.close()
 
         print(str(e))
-
-        if "Duplicate entry" in str(e):
-            return {"error": "user already exist"}, 409
 
         return abort(500, 'Internal server error')
