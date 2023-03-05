@@ -19,12 +19,9 @@ def signup():
     try:
         jwt_token = create_new_user(request.json, token, session)
 
-        session.close()
-
         return {"user": jwt_token, "msg": "new user created successfully!"}, 201
     except Exception as e:
         session.rollback()
-        session.close()
 
         print(str(e))
 
@@ -32,6 +29,8 @@ def signup():
             return {"error": "user already exist"}, 409
 
         return abort(500, 'Internal server error')
+    finally:
+        session.close()
 
 
 @users_bp.route('/login', methods=["POST"])
@@ -54,8 +53,9 @@ def login():
         return {"user": jwt_token, "msg": "user login successfully!"}, 201
     except Exception as e:
         session.rollback()
-        session.close()
 
         print(str(e))
 
         return abort(500, 'Internal server error')
+    finally:
+        session.close()

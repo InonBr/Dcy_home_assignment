@@ -1,6 +1,5 @@
 from models import Blog
 from sqlalchemy import text
-from sqlalchemy.orm import selectinload
 import uuid
 
 

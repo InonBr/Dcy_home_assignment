@@ -20,16 +20,15 @@ def get_blogs():
 
         blogs = get_all_blogs()
 
-        session.close()
-
         return {"new_blog": blogs}, 200
     except Exception as e:
         session.rollback()
-        session.close()
 
         print(str(e))
 
         return abort(500, 'Internal server error')
+    finally:
+        session.close()
 
 
 @blogs_bp.route('/new_blog', methods=["POST"])
@@ -55,13 +54,12 @@ def new_post():
             "likes": []
         }
 
-        session.close()
-
         return {"new_blog": blog_dic}, 201
     except Exception as e:
         session.rollback()
-        session.close()
 
         print(str(e))
 
         return abort(500, 'Internal server error')
+    finally:
+        session.close()
