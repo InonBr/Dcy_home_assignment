@@ -1,6 +1,7 @@
 from flask import Flask
 from routes.users import users_bp
 from routes.blogs import blogs_bp
+from routes.likes import likes_bp
 from db.new_mysql_session import mysql_connection_string
 from db.database import sql_alchemy_db
 from flask_migrate import Migrate
@@ -17,7 +18,8 @@ migrate = Migrate(app, sql_alchemy_db)
 
 app.register_blueprint(users_bp)
 app.register_blueprint(blogs_bp)
+app.register_blueprint(likes_bp)
 
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=5000, debug=False)
+    app.run(host="localhost", port=5000, debug=True)

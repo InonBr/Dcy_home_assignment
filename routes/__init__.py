@@ -1,1 +1,1 @@
-from routes import users, blogs
+from routes import users, blogs, likes

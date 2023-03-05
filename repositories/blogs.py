@@ -16,3 +16,7 @@ def create_new_blog(blog_text, current_user, session):
     session.commit()
 
     return new_blog
+
+
+def get_blog_by_id(blog_id, session):
+    return session.query(Blog).filter(text("blog_id = :blog_id")).params(blog_id=blog_id).first()
