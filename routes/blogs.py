@@ -1,10 +1,35 @@
 from flask import Blueprint, request, abort
-from validators import NewBlogValidator, BlogIdParamsValidators
-from utils import validate_request_body, auth_required, validate_request_params
+from validators import NewBlogValidator
+from utils import validate_request_body, auth_required
 from db.new_mysql_session import session
-from repositories import get_user_by_email, create_new_blog, get_blog_by_id
+from repositories import get_user_by_email, create_new_blog, get_all_blogs
 
 blogs_bp = Blueprint('blogs_api', __name__, url_prefix='/api')
+
+
+@blogs_bp.route('/get_blogs', methods=["GET"])
+@auth_required
+def get_blogs():
+    try:
+        current_user = request.current_user
+
+        user_data = get_user_by_email(current_user["email"], session)
+
+        if not user_data:
+            return "user not found", 404
+
+        blogs = get_all_blogs()
+
+        session.close()
+
+        return {"new_blog": blogs}, 200
+    except Exception as e:
+        session.rollback()
+        session.close()
+
+        print(str(e))
+
+        return abort(500, 'Internal server error')
 
 
 @blogs_bp.route('/new_blog', methods=["POST"])
@@ -40,6 +65,3 @@ def new_post():
         print(str(e))
 
         return abort(500, 'Internal server error')
-
-
-
