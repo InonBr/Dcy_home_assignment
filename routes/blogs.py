@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort
-from validators import NewBlogValidator
-from utils import validate_request_body, auth_required
+from validators import NewBlogValidator, BlogIdParamsValidators
+from utils import validate_request_body, auth_required, validate_request_params
 from db.new_mysql_session import session
 from repositories import get_user_by_email, create_new_blog
 
@@ -33,6 +33,33 @@ def new_post():
         session.close()
 
         return {"new_blog": blog_dic}, 201
+    except Exception as e:
+        session.rollback()
+        session.close()
+
+        print(str(e))
+
+        return abort(500, 'Internal server error')
+
+
+@blogs_bp.route('/like/<string:blog_id>', methods=["POST"])
+@validate_request_params(BlogIdParamsValidators)
+@auth_required
+def like(blog_id):
+    try:
+        print(blog_id)
+        return "like"
+        # current_user = request.current_user
+        #
+        # user_data = get_user_by_email(current_user["email"], session)
+        #
+        # if not user_data:
+        #     return "user not found", 404
+        #
+        # session.close()
+        #
+        # return "like"
+        # return {"new_blog": blog_dic}, 201
     except Exception as e:
         session.rollback()
         session.close()

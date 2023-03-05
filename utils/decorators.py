@@ -24,6 +24,21 @@ def validate_request_body(schema):
     return decorator
 
 
+def validate_request_params(schema):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            params = schema.from_dict(request.view_args)
+
+            if not params.validate():
+                return jsonify({"errors": params.errors}), 400
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 def auth_required(f):
     @wraps(f)
     def decode(*args, **kwargs):
