@@ -1,8 +1,9 @@
 from flask import Blueprint, request, abort
-from validators import NewBlogValidator
-from utils import validate_request_body, auth_required
+from validators import NewBlogValidator, BlogIdParamsValidators
+from utils import validate_request_body, auth_required, validate_request_params
 from db.new_mysql_session import session
-from repositories import get_user_by_email, create_new_blog, get_all_blogs
+from repositories import get_user_by_email, create_new_blog, get_all_blogs, get_blog_by_id_and_user_id, \
+    delete_current_blog
 
 blogs_bp = Blueprint('blogs_api', __name__, url_prefix='/api')
 
@@ -55,6 +56,37 @@ def new_post():
         }
 
         return {"new_blog": blog_dic}, 201
+    except Exception as e:
+        session.rollback()
+
+        print(str(e))
+
+        return abort(500, 'Internal server error')
+    finally:
+        session.close()
+
+
+@blogs_bp.route('/delete/<string:blog_id>', methods=["DELETE"])
+@validate_request_params(BlogIdParamsValidators)
+@auth_required
+def delete_blog(blog_id):
+    try:
+        print(blog_id)
+        current_user = request.current_user
+
+        user_data = get_user_by_email(current_user["email"], session)
+
+        if not user_data:
+            return "user not found", 404
+
+        blog_to_delete = get_blog_by_id_and_user_id(blog_id, current_user["user_id"], session)
+
+        if not user_data:
+            return "blog not found", 404
+
+        delete_current_blog(blog_to_delete, session)
+
+        return "", 204
     except Exception as e:
         session.rollback()
 

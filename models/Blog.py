@@ -1,5 +1,6 @@
 from datetime import datetime
 from db.database import sql_alchemy_db
+from sqlalchemy.orm import relationship, backref
 import uuid
 
 
@@ -9,4 +10,5 @@ class Blog(sql_alchemy_db.Model):
                                           nullable=False)
     blog_content = sql_alchemy_db.Column(sql_alchemy_db.Text, nullable=False)
     timestamp = sql_alchemy_db.Column(sql_alchemy_db.DateTime, default=datetime.utcnow)
-    likes = sql_alchemy_db.relationship('BlogLikeByUser', backref='blog', lazy=True)
+    likes = relationship('BlogLikeByUser', cascade='all, delete-orphan', backref=backref('blog', lazy=True))
+

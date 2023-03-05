@@ -22,6 +22,11 @@ def get_blog_by_id(blog_id, session):
     return session.query(Blog).filter(text("blog_id = :blog_id")).params(blog_id=blog_id).first()
 
 
+def get_blog_by_id_and_user_id(blog_id, user_id, session):
+    return session.query(Blog).filter(text("blog_owner_id = :user_id AND blog_id = :blog_id")).params(
+        user_id=user_id, blog_id=blog_id).one()
+
+
 def get_all_blogs():
     blogs = Blog.query.all()
 
@@ -35,3 +40,8 @@ def get_all_blogs():
         }
         for blog in blogs
     ]
+
+
+def delete_current_blog(blog, session):
+    session.delete(blog)
+    session.commit()
