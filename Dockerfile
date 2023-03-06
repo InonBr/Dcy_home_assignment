@@ -15,5 +15,5 @@ RUN flask db migrate && flask db upgrade
 
 EXPOSE 5000
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host", "0.0.0.0"]
 

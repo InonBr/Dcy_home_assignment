@@ -1,5 +1,9 @@
 version: "3"
 
+networks:
+    my_network:
+      driver: bridge
+
 services:
   db:
     container_name: mysql_server
@@ -13,6 +17,8 @@ services:
       - "3306:3306"
     volumes:
       - ./data:/var/lib/mysql
+    networks:
+      - my_network
 
 # the image below is working, but I cannot make it "talk" with the db on the other image
 #  web:
@@ -23,3 +29,5 @@ services:
 #      - "5000:5000"
 #    env_file:
 #      - .env
+#    networks:
+#      - my_network
